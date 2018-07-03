@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Trivia Game!</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="./assets/css/style.css" />
+</head>
+
+<body>
+    <div class="container d-flex h-100 justify-content-center">
+        <div class="row align-self-center w-100">
+            <div class="col-6-md mx-auto" id="boxPanel">
+                <div class="row justify-content-center">
+                    <div class="col-6-md">
+                        <h1 class="display-2 text-center">Video Game Trivia!</h1>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 text-center" id="info-box"></div>
+                </div>
+                <div class="row justify-content-center">
+                    <div class="col-12 text-center" id="difficulty">
+                        <button id="easyMode" class="initiallyHidden">Easy</button>
+                        <button id="mediumMode" class="initiallyHidden">Medium</button>
+                        <button id="hardMode" class="initiallyHidden">Hard</button>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12-md" id="question"></div>
+                </div>
+                <div class="row">
+                    <div class="col-12-md" id="answers"></div>
+                </div>
+                <div class="row justify-content-center">
+                    <div class="col-6" id="timer"></div>
+                </div>
+                <div class="row align-self-end justify-content-center">
+                        <div class="col-12-md text-center">
+                            <button id="start-button">Start</button>
+                        </div>
+                    </div>
+            </div>
+
+        </div>
+
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script type="text/javascript" src="./assets/javascript/app.js">
+
+    </script>
+</body>
+
+</html>

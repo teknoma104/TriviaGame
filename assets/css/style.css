@@ -1,0 +1,42 @@
+body,html {
+    height: 100%;
+}
+
+body {
+    background-image: url("../images/console_wallpaper.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+#style-this-tron {
+    width: 1024px;
+    height: 720px;
+}
+
+#boxPanel {
+    background-color: lightgray;
+    border: solid 2px grey;
+    width: 1024px;
+    height: 720px;
+}
+
+#answers {
+    height: 300px;
+}
+
+#timer {
+    font-family: monospace;
+    font-size: 75px;
+    color: green;
+  
+    /* Typography */
+    text-align: center;
+  
+    /* Visual */
+    /* background: black; */
+}
+
+.initiallyHidden {
+    display: none;
+}
+
