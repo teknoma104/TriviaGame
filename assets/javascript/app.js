@@ -62,13 +62,19 @@ var retrieveQuestions = function (mode) {
 
             console.log("There are " + response.results[x].incorrect_answers.length + " incorrect answers.");
 
+            var wrongAnswers = [];
             for (var y = 0; y < response.results[x].incorrect_answers.length; y++) {
                 console.log("Starting y loop: number " + y);
                 console.log("Trying to assign questionsArray[" + x + "].ic[" + y + "] the value");
                 console.log("from respone.results[" + x + "].incorrect_answers[" + y + "] which is " + response.results[x].incorrect_answers[y]);
                 console.log(response.results[x].incorrect_answers[y]);
-                questionsArray[x].ic[y] = response.results[x].incorrect_answers[y];
+                wrongAnswers[y] = response.results[x].incorrect_answers[y];
+                questionsArray[x]["ia"][y] =response.results[x].incorrect_answers[y];
             }
+
+            
+            
+            console.log("Testing incorrect answer array: " + questionsArray.ia[0]);
             console.log("================= End Loop  =================");
         }
 
