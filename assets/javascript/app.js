@@ -119,10 +119,9 @@ function createCard(article) {
 
     if (article.ia.length === 1)
         answersCombined.push(article.ia);
-    else 
-    {
-        for (var x = 0; x < article.ia.length; x++ )
-        answersCombined.push(article.ia[x]);
+    else {
+        for (var x = 0; x < article.ia.length; x++)
+            answersCombined.push(article.ia[x]);
     }
     console.log("Showing answersCombined after pushing article.ia:  " + answersCombined);
 
@@ -131,25 +130,36 @@ function createCard(article) {
         console.log(answersCombined[x]);
     }
 
-    var unorderedList = $("<ul>");
-
     if (answersCombined.length < 3) {
         console.log("answersCombined.length is : " + answersCombined.length);
         console.log("Conditional met for having only 2 possible answers.");
-        var cardBody = $("<div class='card-body'>").html(unorderedList.text(answersCombined[0]) + unorderedList.text(answersCombined[1]));
+
+        console.log(JSON.stringify(answersCombined[0]));
+        console.log(JSON.stringify(answersCombined[1]));
+        var cardBody = $("<div class='card-body'>").html($("<p>").text(JSON.stringify(answersCombined[0])) + $("<p>").text(JSON.stringify(answersCombined[1])));
     }
     else {
         console.log("Conditional met for having 4 possible answers.");
         console.log("answersCombined preshuffle:  " + answersCombined);
         shuffle(answersCombined);
         console.log("answersCombined shuffled now:  " + answersCombined);
-        
 
-        var cardBody = $("<div class='card-body'>").html(
-            unorderedList.text(answersCombined[0]) +
-            unorderedList.text(answersCombined[1]) +
-            unorderedList.text(answersCombined[2]) +
-            unorderedList.text(answersCombined[3]));
+
+        var cardBody = $("<div class='card-body'>");
+        for (var x = 0; x < answersCombined.length; x++) {
+            var paragraph = $("<p>");
+            paragraph.text(answersCombined[x]);
+            cardBody.append(paragraph);
+        }
+        // $("<p>").text(JSON.stringify(answersCombined[0])) +
+        // $("<p>").text(JSON.stringify(answersCombined[1])) +
+        // $("<p>").text(JSON.stringify(answersCombined[2])) +
+        // $("<p>").text(JSON.stringify(answersCombined[3]));
+
+        console.log(JSON.stringify(answersCombined[0]));
+        console.log(JSON.stringify(answersCombined[1]));
+        console.log(JSON.stringify(answersCombined[2]));
+        console.log(JSON.stringify(answersCombined[3]));
     }
 
     card.append(cardHeader, cardBody);
