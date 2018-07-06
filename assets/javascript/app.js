@@ -2,8 +2,13 @@ var startGameText = "Welcome to the video game trivia! Click the start button at
 var instructionText = "You will get 30 seconds to answer each question. There are 10 questions in all.";
 
 var difficulty = "";
-var questionsArray = [{ q: "", ca: "", ia: [] }];
-var questionCards = [];
+var questionsArray = [{ question: "", correctAnswer: "", incorrectAnswer: [] }];
+
+var questionCounter = 0;
+
+var timerID;
+var timerRemaining = 30;
+var reachedZero = false;
 
 var questionContainer = $("#question-container");
 
@@ -28,8 +33,7 @@ var questionContainer = $("#question-container");
 var retrieveAndParseQA = function (mode) {
     var queryURL = "https://opentdb.com/api.php?amount=10&category=15&difficulty=" + mode + "";
 
-
-
+    console.log("retrieveAndParseQA function called");
     console.log(queryURL);
 
     $.ajax({
@@ -39,10 +43,10 @@ var retrieveAndParseQA = function (mode) {
         console.log(response);
 
         console.log("Total # of responses: " + response.results.length);
-        console.log(response.results[0].question);
-        console.log(response.results[0].correct_answer);
-        console.log(response.results[0].incorrect_answers);
-        console.log(response.results[0].incorrect_answers.length);
+        console.log("Response's question:  " + response.results[0].question);
+        console.log("Response's correct answer:  " + response.results[0].correct_answer);
+        console.log("Response's # of incorrect answers:  " + response.results[0].incorrect_answers.length);
+        console.log("Response's total incorrect answer(s):  " + response.results[0].incorrect_answers);
         console.log(response.results[0].incorrect_answers[0]);
         console.log(response.results[0].incorrect_answers[1]);
         console.log(response.results[0].incorrect_answers[2]);
@@ -67,25 +71,73 @@ var retrieveAndParseQA = function (mode) {
 
             for (var y = 0; y < response.results[x].incorrect_answers.length; y++) {
                 console.log("Starting y loop: number " + y);
-                console.log("Trying to assign questionsArray[" + x + "].ic[" + y + "] the value");
-                console.log("from response.results[" + x + "].incorrect_answers[" + y + "] which is " + response.results[x].incorrect_answers[y]);
+                console.log("Incorrect answer #" + y +": " + response.results[x].incorrect_answers[y]);
                 console.log(response.results[x].incorrect_answers[y]);
 
                 questionsArray[x].ia[y] = response.results[x].incorrect_answers[y];
             }
 
-            console.log("Testing incorrect answer array: " + questionsArray[x].ia[0]);
+            console.log("Testing incorrect answer array: " + questionsArray[x].incorrectAnswer);
 
-
-            questionCards.push(createCard(questionsArray[x]));
             console.log("================= End Loop  =================");
         }
+    }).then(function () {
+        displayQuestions();
+    });
 
-        questionContainer.append(questionCards);
-
-
-    })
 };
+
+
+
+function displayQuestions() {
+    console.log("displayQuestions function called");
+
+    questionContainer.append(createCard(questionsArray[questionCounter]));
+
+    countdownStart();
+}
+
+function countdownStart() {
+    console.log("30 second timer started");
+    timerID = setInterval(count, 1000);
+}
+
+function stop() {
+
+    console.log("stopping");
+    clearInterval(timerID);
+
+}
+
+function count() {
+
+    timerRemaining--;
+    var converted = timeConverter(timerRemaining);
+
+    $("#timer").text(converted);
+    if (converted === "00:00")
+        stop();
+
+}
+
+function timeConverter(t) {
+
+    var minutes = Math.floor(t / 60);
+    var seconds = t - (minutes * 60);
+
+    if (seconds < 10) {
+        seconds = "0" + seconds;
+    }
+
+    if (minutes === 0) {
+        minutes = "00";
+    }
+    else if (minutes < 10) {
+        minutes = "0" + minutes;
+    }
+
+    return minutes + ":" + seconds;
+}
 
 function shuffle(a) {
     var j, x, i;
@@ -109,7 +161,7 @@ function createCard(article) {
     console.log("question: " + article.q);
 
     var card = $("<div class='card'>");
-    var cardHeader = $("<div class='card-header'>").append($("<h3>").append(article.q));
+    var cardHeader = $("<div class='card-header'>").append($("<h6>").append(article.q));
 
     console.log("correct answer: " + article.ca);
     console.log("incorrect answer: " + article.ia);
@@ -130,13 +182,23 @@ function createCard(article) {
         console.log(answersCombined[x]);
     }
 
+    // If it's a true/false type question, just display the question + true/false answer
+    // If there's multiple choice, shuffles the possible answers around in the answersCombined array before displaying the question +  possible answers
     if (answersCombined.length < 3) {
         console.log("answersCombined.length is : " + answersCombined.length);
         console.log("Conditional met for having only 2 possible answers.");
 
         console.log(JSON.stringify(answersCombined[0]));
         console.log(JSON.stringify(answersCombined[1]));
-        var cardBody = $("<div class='card-body'>").html($("<p>").text(JSON.stringify(answersCombined[0])) + $("<p>").text(JSON.stringify(answersCombined[1])));
+        var cardBody = $("<div class='card-body'>");
+        for (var x = 0; x < answersCombined.length; x++) {
+            var paragraph = $("<p>");
+            paragraph.text(answersCombined[x]);
+            if (answersCombined[x] === article.ca)
+                paragraph.attr("id", "correctanswer")
+
+            cardBody.append(paragraph);
+        }
     }
     else {
         console.log("Conditional met for having 4 possible answers.");
