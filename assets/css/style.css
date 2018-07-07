@@ -8,6 +8,14 @@ body {
     background-size: cover;
 }
 
+p {
+    cursor: pointer;
+}
+
+p:hover { 
+    border: 2px solid red;
+}
+
 #style-this-tron {
     width: 1024px;
     height: 720px;

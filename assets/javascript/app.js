@@ -2,34 +2,27 @@ var startGameText = "Welcome to the video game trivia! Click the start button at
 var instructionText = "You will get 30 seconds to answer each question. There are 10 questions in all.";
 
 var difficulty = "";
-var questionsArray = [{ question: "", correctAnswer: "", incorrectAnswer: [] }];
+var score = 10;
+var questionsArray = [{
+    question: "",
+    correctAnswer: "",
+    incorrectAnswer: []
+}];
 
 var questionCounter = 0;
 
 var timerID;
 var timerRemaining = 30;
-var reachedZero = false;
 
 var questionContainer = $("#question-container");
 
-// The createRow function takes data returned by OMDB and appends the table data to the tbody
-// var createQA = function (data) {
-//     // Get reference to existing tbody element, create a new table row element
-//     var tBody = $("tbody");
-//     var tRow = $("<tr>");
 
-//     // Methods run on jQuery selectors return the selector they we run on
-//     // This is why we can create and save a reference to a td in the same statement we update its text
-//     var titleTd = $("<td>").text(data.Title);
-//     var yearTd = $("<td>").text(data.Year);
-//     var actorsTd = $("<td>").text(data.Actors);
-//     // Append the newly created table data to the table row
-//     tRow.append(titleTd, yearTd, actorsTd);
-//     // Append the table row to the table body
-//     tBody.append(tRow);
-// };
+function decodeSpecialChars(html) {
+    var txt = document.createElement("textarea");
+    txt.innerHTML = html;
+    return txt.value;
+}
 
-// The search OMDB function takes a movie, searches the omdb api for it, and then passes the data to createRow
 var retrieveAndParseQA = function (mode) {
     var queryURL = "https://opentdb.com/api.php?amount=10&category=15&difficulty=" + mode + "";
 
@@ -43,15 +36,8 @@ var retrieveAndParseQA = function (mode) {
         console.log(response);
 
         console.log("Total # of responses: " + response.results.length);
-        console.log("Response's question:  " + response.results[0].question);
-        console.log("Response's correct answer:  " + response.results[0].correct_answer);
-        console.log("Response's # of incorrect answers:  " + response.results[0].incorrect_answers.length);
-        console.log("Response's total incorrect answer(s):  " + response.results[0].incorrect_answers);
-        console.log(response.results[0].incorrect_answers[0]);
-        console.log(response.results[0].incorrect_answers[1]);
-        console.log(response.results[0].incorrect_answers[2]);
 
-
+        console.log("Starting for loop to add the questions+answers into questionsArray");
         for (var x = 0; x < response.results.length; x++) {
             console.log("================= Loop " + x + " =================");
             console.log("The question is: " + response.results[x].question);
@@ -59,22 +45,59 @@ var retrieveAndParseQA = function (mode) {
             console.log("There are " + response.results[x].incorrect_answers.length + " incorrect answers.");
 
             questionsArray[x] = {
-                "q": response.results[x].question,
-                "ca": response.results[x].correct_answer,
-                "ia": []
+                "question": response.results[x].question,
+                "correctAnswer": response.results[x].correct_answer,
+                "incorrectAnswer": []
             }
 
-            console.log("Testing questionArray question: " + questionsArray[x].q);
-            console.log("Testing questionArray correct answer: " + questionsArray[x].ca);
+
+            console.log("--------------------");
+            console.log("Looking for &quot; in question");
+            console.log("Before the change:  " + response.results[x].question);
+            var checkQuotesQuestion = response.results[x].question;
+            var textQuestion = decodeURIComponent(response.results[x].question);
+            var decodeQuestion = response.results[x].question;
+            var hedecodeQuestion = response.results[x].question;
+
+            checkQuotesQuestion = checkQuotesQuestion.replace(/&quot;/g, '"');
+            decodeSpecialChars(decodeQuestion);
+            he.decode(hedecodeQuestion);
+
+            console.log("checkQuotesQuestion:  " + checkQuotesQuestion);
+            console.log("textQuestion:  " + textQuestion);
+            console.log("decodeQuestion:  " + decodeQuestion);
+            console.log("hedecodeQuestion:  " + hedecodeQuestion);
+
+
+
+            console.log("Looking for &quot; in correct_answer");
+            console.log("Before the change:  " + response.results[x].correct_answer);
+            var checkQuotesCorrectAnswer = response.results[x].correct_answer;
+            var textCorrectAnswer = decodeURIComponent(response.results[x].correct_answer);
+            var decodeCorrectAnswer = response.results[x].correct_answer;
+            var hedecodeCorrectAnswer = response.results[x].correct_answer;
+
+            checkQuotesCorrectAnswer = checkQuotesCorrectAnswer.replace(/&quot;/g, '"');
+            decodeSpecialChars(decodeCorrectAnswer);
+            he.decode(hedecodeCorrectAnswer);
+
+            console.log("checkQuotesCorrectAnswer:  " + checkQuotesCorrectAnswer);
+            console.log("textCorrectAnswer:  " + textCorrectAnswer);
+            console.log("decodeCorrectAnswer:  " + decodeCorrectAnswer);
+            console.log("hedecodeCorrectAnswer:  " + hedecodeCorrectAnswer);
+            console.log("--------------------");
+
+
+            console.log("Testing questionArray question: " + questionsArray[x].question);
+            console.log("Testing questionArray correct answer: " + questionsArray[x].correctAnswer);
 
             console.log("There are " + response.results[x].incorrect_answers.length + " incorrect answers.");
 
             for (var y = 0; y < response.results[x].incorrect_answers.length; y++) {
                 console.log("Starting y loop: number " + y);
-                console.log("Incorrect answer #" + y +": " + response.results[x].incorrect_answers[y]);
-                console.log(response.results[x].incorrect_answers[y]);
+                console.log("Incorrect answer #" + y + ": " + response.results[x].incorrect_answers[y]);
 
-                questionsArray[x].ia[y] = response.results[x].incorrect_answers[y];
+                questionsArray[x].incorrectAnswer[y] = response.results[x].incorrect_answers[y];
             }
 
             console.log("Testing incorrect answer array: " + questionsArray[x].incorrectAnswer);
@@ -92,7 +115,11 @@ var retrieveAndParseQA = function (mode) {
 function displayQuestions() {
     console.log("displayQuestions function called");
 
+    timerRemaining = 30;
+
+    $("#question-container").empty();
     questionContainer.append(createCard(questionsArray[questionCounter]));
+    $(".card-body").removeAttr("disabled");
 
     countdownStart();
 }
@@ -100,6 +127,7 @@ function displayQuestions() {
 function countdownStart() {
     console.log("30 second timer started");
     timerID = setInterval(count, 1000);
+    $("#message-box").text("");
 }
 
 function stop() {
@@ -115,8 +143,21 @@ function count() {
     var converted = timeConverter(timerRemaining);
 
     $("#timer").text(converted);
-    if (converted === "00:00")
+    if (converted === "00:00") {
         stop();
+        score--;
+        console.log("Score is now:  " + score);
+        if (questionCounter === 10)
+        {
+            $("#message-box").html("Sorry You ran out of time. Moving to score screen in 5 seconds.");
+            setTimeout(endGame, 1000 * 5);
+        }
+        else {
+            $("#message-box").html("Sorry You ran out of time. Moving to the next question in 5 seconds.");
+            setTimeout(displayQuestions, 1000 * 5);
+        }
+
+    }
 
 }
 
@@ -139,8 +180,10 @@ function timeConverter(t) {
     return minutes + ":" + seconds;
 }
 
+// Shuffles multiple choice answer array using Fisher-Yates shuffle algorithm
 function shuffle(a) {
     var j, x, i;
+
     for (i = a.length - 1; i > 0; i--) {
         j = Math.floor(Math.random() * (i + 1));
         x = a[i];
@@ -150,6 +193,7 @@ function shuffle(a) {
     return a;
 }
 
+
 function createCard(article) {
     // This function takes in a single JSON object for an article/headline
     // It constructs a jQuery element containing all of the formatted HTML for the
@@ -158,22 +202,26 @@ function createCard(article) {
     console.log("createCard function called");
     var answersCombined = [];
 
-    console.log("question: " + article.q);
+    questionCounter++;
+
+    console.log("Question #" + questionCounter);
+
+    console.log("question: " + article.question);
 
     var card = $("<div class='card'>");
-    var cardHeader = $("<div class='card-header'>").append($("<h6>").append(article.q));
+    var cardHeader = $("<div class='card-header'>").append($("<h6>").append("#" + questionCounter + ": " + article.question));
 
-    console.log("correct answer: " + article.ca);
-    console.log("incorrect answer: " + article.ia);
+    console.log("correct answer: " + article.correctAnswer);
+    console.log("incorrect answer: " + article.incorrectAnswer);
 
-    answersCombined.push(article.ca);
+    answersCombined.push(article.correctAnswer);
     console.log("Showing answersCombined after pushing article.ca:  " + answersCombined);
 
-    if (article.ia.length === 1)
-        answersCombined.push(article.ia);
+    if (article.incorrectAnswer.length === 1)
+        answersCombined.push(article.incorrectAnswer);
     else {
-        for (var x = 0; x < article.ia.length; x++)
-            answersCombined.push(article.ia[x]);
+        for (var x = 0; x < article.incorrectAnswer.length; x++)
+            answersCombined.push(article.incorrectAnswer[x]);
     }
     console.log("Showing answersCombined after pushing article.ia:  " + answersCombined);
 
@@ -191,10 +239,14 @@ function createCard(article) {
         console.log(JSON.stringify(answersCombined[0]));
         console.log(JSON.stringify(answersCombined[1]));
         var cardBody = $("<div class='card-body'>");
+
+        console.log("Starting for True/False loop to compare answersCombined with article.correctAnswer");
         for (var x = 0; x < answersCombined.length; x++) {
             var paragraph = $("<p>");
+            console.log("testing answersCombined[" + x + "]:  " + answersCombined[x]);
+            console.log("testing article.correctAnswer:  " + article.correctAnswer);
             paragraph.text(answersCombined[x]);
-            if (answersCombined[x] === article.ca)
+            if (answersCombined[x] === article.correctAnswer)
                 paragraph.attr("id", "correctanswer")
 
             cardBody.append(paragraph);
@@ -208,25 +260,34 @@ function createCard(article) {
 
 
         var cardBody = $("<div class='card-body'>");
+
+        console.log("Starting for MultipleChoice loop to compare answersCombined with article.correctAnswer");
         for (var x = 0; x < answersCombined.length; x++) {
             var paragraph = $("<p>");
+
+            console.log("testing answersCombined[" + x + "]:  " + answersCombined[x]);
+            console.log("testing article.correctAnswer:  " + article.correctAnswer);
             paragraph.text(answersCombined[x]);
+
+            if (answersCombined[x] === article.correctAnswer)
+                paragraph.attr("id", "correctanswer")
             cardBody.append(paragraph);
         }
-        // $("<p>").text(JSON.stringify(answersCombined[0])) +
-        // $("<p>").text(JSON.stringify(answersCombined[1])) +
-        // $("<p>").text(JSON.stringify(answersCombined[2])) +
-        // $("<p>").text(JSON.stringify(answersCombined[3]));
 
-        console.log(JSON.stringify(answersCombined[0]));
-        console.log(JSON.stringify(answersCombined[1]));
-        console.log(JSON.stringify(answersCombined[2]));
-        console.log(JSON.stringify(answersCombined[3]));
+        console.log(answersCombined[0]);
+        console.log(answersCombined[1]);
+        console.log(answersCombined[2]);
+        console.log(answersCombined[3]);
     }
 
     card.append(cardHeader, cardBody);
 
     return card;
+}
+
+function endGame() {
+    $("#message-box").html("Trivia over! You got " + score + " correct out of 10!");
+    $("#reset-button").show();
 }
 
 $(document).ready(function () {
@@ -239,6 +300,26 @@ $(document).ready(function () {
         $("#mediumMode").removeClass("initiallyHidden");
         $("#hardMode").removeClass("initiallyHidden");
         $(".info-text").html("");
+    });
+
+    $("#reset-button").click(function () {
+
+        $(this).hide();
+
+        difficulty = "";
+        score = 10;
+        questionsArray = [{
+            question: "",
+            correctAnswer: "",
+            incorrectAnswer: []
+        }];
+
+        timerRemaining = 30;
+
+        $("#question-container").empty();
+        $("#message-box").html("");
+
+        $("#start-button").show();
     });
 
     $("#easyMode").click(function () {
@@ -272,5 +353,36 @@ $(document).ready(function () {
         $("#easyMode").addClass("initiallyHidden");
         $("#mediumMode").addClass("initiallyHidden");
         $("#hardMode").addClass("initiallyHidden");
+    });
+
+    $("#question-box").on("click", "p", function () {
+
+        console.log("Checking $(<p>).text() value:  " + $(this).text());
+        console.log("Checking questionsArray.correctAnswer value:  " + questionsArray[questionCounter - 1].correctAnswer);
+
+        if ($(this).text() === questionsArray[questionCounter - 1].correctAnswer) {
+            console.log("Right answer clicked");
+            stop();
+
+            console.log("Score is now:  " + score);
+            $("#message-box").html("Correct answer! Moving to the next question in 10 seconds.");
+
+            if (questionCounter === 10)
+                endGame();
+            else
+                setTimeout(displayQuestions, 1000 * 10);
+        } else {
+            console.log("Wrong answer clicked");
+            stop();
+
+            score--;
+            console.log("Score is now:  " + score);
+            $("#message-box").html("Wrong answer! The correct answer was " + questionsArray[questionCounter - 1].correctAnswer + ". Moving to the next question in 10 seconds.");
+
+            if (questionCounter === 10)
+                endGame();
+            else
+                setTimeout(displayQuestions, 1000 * 10);
+        }
     });
 });
